@@ -20,19 +20,22 @@
   </head>
   <body>
     <!-- Form template for add project -->
-    <template>
-      <form class="project-form">
+    <template id="project-form-template">
+      <form class="project-form needs-validation">
         <div class="mb-3">
           <label for="input-title" class="form-label">Title</label>
           <input type="text" class="form-control" id="input-title" />
+          <div class="invalid-feedback"></div>
         </div>
         <div class="mb-3">
           <label for="input-description" class="form-label">Description</label>
           <input type="text" class="form-control" id="input-description" />
+          <div class="invalid-feedback"></div>
         </div>
         <div class="mb-3">
           <label for="input-people" class="form-label">People</label>
           <input type="number" class="form-control" id="input-people" />
+          <div class="invalid-feedback"></div>
         </div>
         <button type="submit" class="btn btn-primary">Add Project</button>
       </form>
