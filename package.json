@@ -1,0 +1,29 @@
+{
+  "name": "project-manager-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "http-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qianist/project-manager-ts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qianist/project-manager-ts/issues"
+  },
+  "homepage": "https://github.com/qianist/project-manager-ts#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.12.0",
+    "@typescript-eslint/parser": "^4.12.0",
+    "eslint": "^7.17.0",
+    "http-server": "^0.12.3",
+    "prettier": "2.2.1",
+    "typescript": "^4.1.3"
+  }
+}
