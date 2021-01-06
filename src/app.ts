@@ -1,7 +1,24 @@
 const appContainer = document.getElementById("app") as HTMLDivElement;
 
+// Drap and Drop Inerfaces
+interface Draggable {
+  dragStartHandler(event: DragEvent): void;
+  dragEndHandler?(event: DragEvent): void;
+}
+
+interface DragTarget {
+  dragOverHandler(event: DragEvent): void;
+  dropHandler(event: DragEvent): void;
+  dragLeaveHandler(event: DragEvent): void;
+}
+
 function getRandomId() {
   return Math.random().toString(16).slice(2).toUpperCase();
+}
+
+enum Status {
+  ACTIVE,
+  FINISHED,
 }
 
 class Project {
@@ -10,7 +27,7 @@ class Project {
     public title: string,
     public description: string,
     public memberSize: number,
-    public active: boolean = true
+    public status: Status = Status.ACTIVE
   ) {
     this.id = getRandomId();
   }
@@ -18,29 +35,34 @@ class Project {
 
 type onChangeListener = () => void;
 
-interface Store {
-  projects: Project[];
-  listeners: onChangeListener[];
-  subscribe: (listener: onChangeListener) => void;
-  addProject: (p: Project) => string | void;
-}
-
-const store: Store = {
-  projects: [],
-  listeners: [],
-  subscribe: function (listener) {
+class Store {
+  projects: Project[] = [];
+  listeners: onChangeListener[] = [];
+  subscribe(listener: onChangeListener): void {
     this.listeners.push(listener);
-  },
-  addProject: function (project) {
+  }
+  broadcast() {
+    this.listeners.forEach((l) => l());
+  }
+  addProject(project: Project): string | void {
     if (this.projects.findIndex((p) => p.title == project.title) != -1) {
       return "Project already exsists";
     }
     this.projects.push(project);
-    this.listeners.forEach((f) => f());
-  },
-};
+    this.broadcast();
+  }
+  changeProjectStatus(id: string, status: Status) {
+    const target = this.projects.find((p) => p.id == id);
+    if (target && target.status != status) {
+      target.status = status;
+      this.broadcast();
+    }
+  }
+}
 
-function AutoBind(
+const store = new Store();
+
+function autobind(
   _con: unknown,
   _name: string,
   descriptor: PropertyDescriptor
@@ -117,7 +139,7 @@ class ProjectForm {
     to.appendChild(this.formEle);
   }
 
-  @AutoBind
+  @autobind
   submitHandler(e: Event) {
     e.preventDefault();
     if (
@@ -139,6 +161,10 @@ class ProjectForm {
       +this.peopleInput.value
     );
 
+    this.titleInput.value = "";
+    this.descInput.value = "";
+    this.peopleInput.value = "";
+
     const errMsg = store.addProject(newProject);
     if (errMsg) {
       alert(errMsg);
@@ -146,11 +172,12 @@ class ProjectForm {
   }
 }
 
-class ProjectList {
+class ProjectList implements DragTarget {
   rootElement: HTMLUListElement;
   container: HTMLElement;
   titleEle: HTMLElement;
-  constructor(public title: string) {
+
+  constructor(public status: Status) {
     const template = document.getElementById(
       "project-list"
     ) as HTMLTemplateElement;
@@ -161,16 +188,40 @@ class ProjectList {
       ".card-header"
     ) as HTMLLIElement;
     this.render();
+    this.config();
+  }
+  config() {
     store.subscribe(() => this.render());
+    this.rootElement.addEventListener("dragover", this.dragOverHandler);
+    this.rootElement.addEventListener("drop", this.dropHandler);
+    this.rootElement.addEventListener("dragleave", this.dragLeaveHandler);
+  }
+  @autobind
+  dragOverHandler(event: DragEvent): void {
+    if (event.dataTransfer && event.dataTransfer.types[0] == "text/plain") {
+      event.preventDefault();
+      this.rootElement.classList.add("border-success");
+    }
+  }
+  @autobind
+  dropHandler(event: DragEvent): void {
+    if (!event.dataTransfer) return;
+
+    const projectId = event.dataTransfer.getData("text/plain");
+    store.changeProjectStatus(projectId, this.status);
+    this.rootElement.classList.remove("border-success");
+  }
+  @autobind
+  dragLeaveHandler(): void {
+    this.rootElement.classList.remove("border-success");
   }
 
   render() {
-    this.titleEle.innerText = this.title;
+    this.titleEle.innerText =
+      this.status == Status.ACTIVE ? "Active" : "Finished";
     this.clear();
     store.projects
-      .filter((project) =>
-        this.title == "Active" ? project.active : !project.active
-      )
+      .filter((project) => project.status == this.status)
       .forEach((project) => {
         new ProjectItem(project).attach(this.container);
       });
@@ -186,7 +237,7 @@ class ProjectList {
   }
 }
 
-class ProjectItem {
+class ProjectItem implements Draggable {
   rootElement: HTMLLIElement;
   titleEle: HTMLElement;
   descEle: HTMLElement;
@@ -216,6 +267,16 @@ class ProjectItem {
       "#project-members"
     ) as HTMLElement;
     this.render();
+    this.config();
+  }
+  config() {
+    this.rootElement.addEventListener("dragstart", this.dragStartHandler);
+  }
+  @autobind
+  dragStartHandler(event: DragEvent): void {
+    if (!event.dataTransfer) return;
+    event.dataTransfer.setData("text/plain", this.project.id);
+    event.dataTransfer.effectAllowed = "move";
   }
 
   render() {
@@ -230,5 +291,5 @@ class ProjectItem {
 }
 
 new ProjectForm().attach(appContainer);
-new ProjectList("Active").attach(appContainer);
-new ProjectList("Finished").attach(appContainer);
+new ProjectList(Status.ACTIVE).attach(appContainer);
+new ProjectList(Status.FINISHED).attach(appContainer);
