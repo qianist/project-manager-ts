@@ -19,9 +19,11 @@
     <script src="../dist/app.js" defer></script>
   </head>
   <body>
+    <div id="app" class="container pt-3"></div>
+
     <!-- Form template for add project -->
     <template id="project-form-template">
-      <form class="project-form needs-validation">
+      <form class="needs-validation">
         <div class="mb-3">
           <label for="input-title" class="form-label">Title</label>
           <input type="text" class="form-control" id="input-title" />
@@ -41,6 +43,29 @@
       </form>
     </template>
 
-    <div id="app"></div>
+    <!-- Project list template -->
+    <template id="project-list">
+      <div class="card">
+        <div class="card-header text-dark">Title</div>
+        <div class="card-body">
+          <div class="row">
+            <!-- Project items goes here -->
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Project item template -->
+    <template>
+      <div class="col-sm-6">
+        <div class="card mb-2">
+          <div class="card-header text-dark">Title</div>
+          <div class="card-body">
+            <h6 class="card-subtitle text-muted mb-2">Assigned to</h6>
+            <div class="card-text">Content description</div>
+          </div>
+        </div>
+      </div>
+    </template>
   </body>
 </html>

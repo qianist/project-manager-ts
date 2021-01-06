@@ -1,6 +1,10 @@
 const appContainer = document.getElementById("app") as HTMLDivElement;
 
-function AutoBind(_con: any, _name: string, descriptor: PropertyDescriptor) {
+function AutoBind(
+  _con: unknown,
+  _name: string,
+  descriptor: PropertyDescriptor
+) {
   return {
     get() {
       return descriptor.value.bind(this);
@@ -48,8 +52,9 @@ class ProjectForm {
       "project-form-template"
     ) as HTMLTemplateElement;
 
-    this.formEle = document.importNode(formTemplate.content, true)
-      .firstElementChild as HTMLFormElement;
+    this.formEle = document
+      .importNode(formTemplate.content, true)
+      .querySelector("form") as HTMLFormElement;
 
     this.titleInput = this.formEle.querySelector(
       "#input-title"
