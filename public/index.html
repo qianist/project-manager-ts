@@ -23,7 +23,7 @@
 
     <!-- Form template for add project -->
     <template id="project-form-template">
-      <form class="needs-validation">
+      <form class="needs-validation mb-5">
         <div class="mb-3">
           <label for="input-title" class="form-label">Title</label>
           <input type="text" class="form-control" id="input-title" />
@@ -45,8 +45,8 @@
 
     <!-- Project list template -->
     <template id="project-list">
-      <div class="card">
-        <div class="card-header text-dark">Title</div>
+      <div class="card mb-3">
+        <div class="card-header text-dark">Active</div>
         <div class="card-body">
           <div class="row">
             <!-- Project items goes here -->
@@ -56,13 +56,17 @@
     </template>
 
     <!-- Project item template -->
-    <template>
+    <template id="project-item">
       <div class="col-sm-6">
         <div class="card mb-2">
-          <div class="card-header text-dark">Title</div>
+          <div id="project-title" class="card-header text-dark">Title</div>
           <div class="card-body">
-            <h6 class="card-subtitle text-muted mb-2">Assigned to</h6>
-            <div class="card-text">Content description</div>
+            <h6 id="project-members" class="card-subtitle text-muted mb-2">
+              Assigned to
+            </h6>
+            <div id="project-description" class="card-text">
+              Content description
+            </div>
           </div>
         </div>
       </div>
